@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db-uek
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-uek_analysis}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-userpassword}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data_uek:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - db_network_uek
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer-uek
+    restart: always
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    networks:
+      - db_network_uek
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data_uek:
+
+networks:
+  db_network_uek:
+    driver: bridge
