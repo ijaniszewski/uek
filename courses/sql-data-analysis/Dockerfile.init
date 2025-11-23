@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install pymssql and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    freetds-dev \
+    freetds-bin \
+    && pip install --no-cache-dir pymssql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy initialization scripts
+COPY init_db.py /app/
+COPY init/ /app/init/
+
+# Make script executable
+RUN chmod +x /app/init_db.py
+
+# Run the initialization script
+CMD ["python", "/app/init_db.py"]

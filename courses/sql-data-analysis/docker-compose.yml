@@ -1,34 +1,50 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_db-uek
-    restart: always
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:1.0.7
+    container_name: sqlserver_db-uek
+    cap_add:
+      - SYS_PTRACE
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-uek_analysis}
-      MYSQL_USER: ${MYSQL_USER:-user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-userpassword}
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong@Passw0rd}
+      MSSQL_PID: "Developer"
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "${MSSQL_PORT:-1433}:1433"
     volumes:
-      - mysql_data_uek:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
+      - sqlserver_data_uek:/var/opt/mssql
     networks:
       - db_network_uek
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  init-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.init
+    container_name: sqlserver_init-uek
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong@Passw0rd}
+      SQL_SERVER_HOST: sqlserver
+    networks:
+      - db_network_uek
+    depends_on:
+      - sqlserver
 
   adminer:
     image: adminer:latest
     container_name: adminer-uek
     restart: always
     ports:
-      - "${ADMINER_PORT:-8080}:8080"
+      - "${ADMINER_PORT:-8083}:8080"
     networks:
       - db_network_uek
     depends_on:
-      - mysql
+      - sqlserver
 
 volumes:
-  mysql_data_uek:
+  sqlserver_data_uek:
 
 networks:
   db_network_uek:
