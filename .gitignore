@@ -48,9 +48,11 @@ venv.bak/
 *.egg-info/
 dist/
 build/
+.venv
 
 # Jupyter Notebooks
 .ipynb_checkpoints
+local_*.ipynb
 
 # R
 .Rhistory

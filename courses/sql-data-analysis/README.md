@@ -37,7 +37,8 @@ docker compose down
 
 ## SQL Exercises
 
-Open `sql-exercises.ipynb` for practice tasks or use Adminer web interface to run queries.
+Open `exercises_notebooks/sql-exercises.ipynb` for practice tasks or use Adminer web interface to run queries.
+For personal scratch work, copy the notebook as `local_<name>.ipynb` inside the same folder (these files are ignored by git).
 
 ## Reset Database
 
